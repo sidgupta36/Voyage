@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans tracking-tight;
+  }
+
+  h1 {
+    @apply text-4xl font-bold leading-tight;
+  }
+
+  h2 {
+    @apply text-3xl font-bold leading-tight;
+  }
+
+  h3 {
+    @apply text-2xl font-bold leading-tight;
+  }
+
+  a {
+    @apply text-primary hover:underline;
+  }
+
+  input,
+  textarea,
+  select {
+    @apply bg-input text-foreground rounded-md border border-border px-3 py-2 text-sm;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+
+  .btn-secondary {
+    @apply btn bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+
+  .btn-ghost {
+    @apply btn hover:bg-accent hover:text-accent-foreground;
+  }
+
+  .btn-link {
+    @apply btn text-primary underline-offset-4 hover:underline;
+  }
+}

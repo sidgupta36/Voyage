@@ -16,67 +16,59 @@ import AIchatSession from "@/aiHandler/Aimodal";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { useNavigate } from "react-router-dom";
 
-
 function CreateTrip() {
   const [formData, setFormData] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const navigate = useNavigate()
-  const trip = useSelector(state=>state.trip.trip)
-  
-  if(Object.keys(trip).length > 0){
-    navigate(`/trip/${trip?._id}`)
+  const navigate = useNavigate();
+  const trip = useSelector((s) => s.trip.trip);
+
+  if (Object.keys(trip).length > 0) {
+    navigate(`/trip/${trip?._id}`);
   }
-  
+
   const InputHandeler = (name, value) => {
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
   const GenerateTrip = async () => {
-    // get user value from localstorage
     const user = JSON.parse(localStorage.getItem("user"));
 
     if (!user) {
       setOpenDialog(true);
       return;
-    } else {
-      if (
-        !formData?.place ||
-        !formData?.people ||
-        !formData?.days ||
-        !formData?.budget
-      ) {
-        return toast.error("Please fill the details", {
-          className: "h-[12vh]"
-        });
-      }
+    }
 
-      let aiPrompt = AIPrompt.replace("{location}", formData?.place?.label)
-        .replace("{days}", formData?.days)
-        .replace("{people}", formData?.people)
-        .replace("{budget}", formData?.budget);
+    if (!formData?.place || !formData?.people || !formData?.days || !formData?.budget) {
+      return toast.error("Please fill the details");
+    }
 
-      try {
-        setLoading(true);
-        const ai_response = await AIchatSession.sendMessage(aiPrompt);
-        const trip = ai_response?.response?.text();
-        const data = {
-          trip: JSON.parse(trip),
-          email: user.email,
-          userId:user.id,
-          choice: { ...formData, place: formData.place.label }
-        };
-        dispatch(TripCreateThunk(data));
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-        toast.error(error.message);
-       
-      }
+    let aiPrompt = AIPrompt.replace("{location}", formData?.place?.label)
+      .replace("{days}", formData?.days)
+      .replace("{people}", formData?.people)
+      .replace("{budget}", formData?.budget);
+
+    try {
+      setLoading(true);
+      const ai_response = await AIchatSession.sendMessage(aiPrompt);
+      const trip = ai_response?.response?.text();
+
+      const data = {
+        trip: JSON.parse(trip),
+        email: user.email,
+        userId: user.id,
+        choice: { ...formData, place: formData.place.label },
+      };
+
+      dispatch(TripCreateThunk(data));
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      toast.error(error.message);
     }
   };
 
@@ -87,135 +79,156 @@ function CreateTrip() {
         GenerateTrip();
       });
     },
-    onError: (error) => console.log(error)
+    onError: (error) => console.log(error),
   });
 
   return (
-    <CreateTripWrapper>
-      <h1>Tell us your travel preferences 🚁</h1>
-      <span>
-        Just provide some basic information, and our trip planner will generate
-        a customized itinerary based on your preferences.
-      </span>
-      {/* Choices input sections */}
-      <div className="choices">
-        <div className="destination">
-          <h2>What is destination of choice?</h2>
+    <CreateTripWrapper
+      className="
+        w-full min-h-screen py-20 px-6 
+        bg-gradient-to-b from-blue-50 to-white
+        animate-fade-in
+      "
+    >
+      {/* Header Section */}
+      <div className="text-center mb-10">
+        <h1 className="text-4xl font-extrabold text-gray-900">
+          Tell us your <span className="text-blue-600">travel preferences</span> 🚁
+        </h1>
+        <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
+          Provide a few quick details, and our AI travel planner will generate a personalized itinerary just for you.
+        </p>
+      </div>
+
+      {/* Destination + Days */}
+      <div className="grid md:grid-cols-2 gap-10 mb-12">
+        {/* Destination */}
+        <div className="backdrop-blur-xl bg-white/40 border border-white/20 p-6 rounded-3xl shadow-xl">
+          <h2 className="text-xl font-semibold text-gray-900 mb-3">Destination</h2>
           <GooglePlacesAutocomplete
             apiKey={import.meta.env.VITE_GOOGLE_PLACE_API_KEY}
             selectProps={{
-              placeholder: "type your destination 🚀",
-              onChange: (v) => {
-                InputHandeler("place", v);
-              }
+              placeholder: "Type your destination 🚀",
+              onChange: (v) => InputHandeler("place", v),
             }}
           />
-          {!formData?.place ? (
-            <h4 className="error-text text-red-600 mt-2 tracking-wider">
-              Please select a destination 🏖️
-            </h4>
-          ) : (
-            <></>
+          {!formData?.place && (
+            <p className="text-red-600 mt-2 text-sm">Please select a destination 🏖️</p>
           )}
         </div>
 
-        <div className="destination ">
-          <h2>How many days are you planning your trip?</h2>
+        {/* Days */}
+        <div className="backdrop-blur-xl bg-white/40 border border-white/20 p-6 rounded-3xl shadow-xl">
+          <h2 className="text-xl font-semibold text-gray-900 mb-3">Number of Days</h2>
           <Input
-            placeholder="Ex.3"
             type="number"
+            placeholder="Ex. 3"
             value={formData?.days}
-            onChange={(e) => {
-              InputHandeler("days", e.target.value);
-            }}
+            onChange={(e) => InputHandeler("days", e.target.value)}
+            className="rounded-xl"
           />
-          {formData?.days <= 0 || formData?.days > 7 ? (
-            <h4 className="error-text text-red-600 mt-2 tracking-wider">
-              We only provide 1 to 7 days trip 🙃
-            </h4>
-          ) : (
-            <></>
+          {(formData?.days <= 0 || formData?.days > 7) && (
+            <p className="text-red-600 mt-2 text-sm">We support trips from 1–7 days 🙃</p>
           )}
         </div>
       </div>
-      {/* Budget section */}
-      <div className="detail-section">
-        <h2>What is Your Budget?</h2>
-        <div className="detail-box">
-          {budgetOptions.map((budget) => {
-            return (
-              <div
-                key={budget.id}
-                className={`box ${
-                  formData?.budget === budget.title &&
-                  "bg-[#edececbb] shadow-md"
-                }`}
-                onClick={() => InputHandeler("budget", budget.title)}
-              >
-                <div style={{ fontSize: "2rem" }}>{budget.icon}</div>
-                <h3>{budget.title}</h3>
-                <p>{budget.description}</p>
-              </div>
-            );
-          })}
+
+      {/* Budget */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Choose Your Budget</h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          {budgetOptions.map((budget) => (
+            <div
+              key={budget.id}
+              className={`
+                cursor-pointer p-6 rounded-3xl
+                backdrop-blur-xl bg-white/40 border border-white/20 shadow-lg 
+                hover:shadow-xl hover:scale-[1.02] transition-all
+                ${formData?.budget === budget.title ? "bg-blue-100 shadow-xl" : ""}
+              `}
+              onClick={() => InputHandeler("budget", budget.title)}
+            >
+              <div className="text-4xl">{budget.icon}</div>
+              <h3 className="text-xl font-semibold mt-3">{budget.title}</h3>
+              <p className="text-gray-600 mt-1">{budget.description}</p>
+            </div>
+          ))}
         </div>
       </div>
-      {/* plan section */}
-      <div className="detail-section">
-        <h2>Who do you plan on traveling with on your next adventure?</h2>
-        <div className="detail-box">
-          {travelOptions.map((travel) => {
-            return (
-              <div
-                key={travel.id}
-                className={`box ${
-                  formData?.people === travel.people &&
-                  "bg-[#edececbb] shadow-md"
-                }`}
-                onClick={() => InputHandeler("people", travel.people)}
-              >
-                <div style={{ fontSize: "2rem" }}>{travel.icon}</div>
-                <h3>{travel.title}</h3>
-                <p>{travel.description}</p>
-              </div>
-            );
-          })}
+
+      {/* People */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Who are you traveling with?</h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          {travelOptions.map((travel) => (
+            <div
+              key={travel.id}
+              className={`
+                cursor-pointer p-6 rounded-3xl
+                backdrop-blur-xl bg-white/40 border border-white/20 shadow-lg 
+                hover:shadow-xl hover:scale-[1.02] transition-all
+                ${formData?.people === travel.people ? "bg-blue-100 shadow-xl" : ""}
+              `}
+              onClick={() => InputHandeler("people", travel.people)}
+            >
+              <div className="text-4xl">{travel.icon}</div>
+              <h3 className="text-xl font-semibold mt-3">{travel.title}</h3>
+              <p className="text-gray-600 mt-1">{travel.description}</p>
+            </div>
+          ))}
         </div>
       </div>
-      <div className="submit-trip mt-10 w-full h-auto flex justify-end text-[16px]">
+
+      {/* Generate Trip Button */}
+      <div className="flex justify-end mt-10">
         {loading ? (
-          <div className="disabled w-auto h-auto p-3 flex items-center justify-center bg-black rounded-md">
-            <h1 className="loading loading-spinner loading-md bg-orange-500" />
-            <h2 className="pl-2 text-white">Loading 😗</h2>
+          <div className="p-4 bg-gray-900 rounded-xl text-white flex items-center gap-3">
+            <div className="loading loading-spinner bg-blue-400"></div>
+            Generating...
           </div>
         ) : (
-          <Button onClick={() => GenerateTrip()}>Generate Trip 🚀</Button>
+          <Button className="px-6 py-4 text-lg rounded-xl" onClick={GenerateTrip}>
+            Generate Trip 🚀
+          </Button>
         )}
       </div>
-      {/* Dialogue section */}
+
+      {/* Login Dialog */}
       <Dialog open={openDialog}>
         <DialogTitle />
         <DialogDescription />
-        <DialogContent className="w-max p-10">
-          <div className="croxx bg-white w-full h-[40px] absolute rounded-md z-10 flex justify-end items-center cursor-pointer">
-            <RxCross2
-              fontSize={"25px"}
-              style={{ marginRight: "10px" }}
-              onClick={() => setOpenDialog(false)}
-            />
-          </div>
-          <div className="text-center h-auto w-auto mb-6 flex items-center justify-center flex-col">
-            <FcGoogle style={{ fontSize: "8vh" }} />
-            <h2 className="text-2xl font-bold mt-4 text-black">Welcome back</h2>
-            <p className="text-gray-400 text-sm">
+        <DialogContent
+          className="
+            rounded-3xl shadow-2xl border border-white/20 
+            backdrop-blur-xl bg-white/50 p-10 w-full max-w-md
+          "
+        >
+          <button
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white shadow flex items-center justify-center hover:bg-gray-200 transition"
+            onClick={() => setOpenDialog(false)}
+          >
+            <RxCross2 className="text-gray-700" size={22} />
+          </button>
+
+          <div className="text-center mb-6">
+            <FcGoogle className="text-6xl mx-auto" />
+            <h2 className="text-3xl font-extrabold mt-4 text-gray-900">Welcome Back</h2>
+            <p className="text-gray-600 text-sm mt-1">
               Don’t have an account?{" "}
-              <a href="#" className="text-blue-500 hover:underline">
-                Sign up.
-              </a>
+              <a href="#" className="text-blue-600 hover:underline">Sign up.</a>
             </p>
           </div>
-          <div className="w-full flex justify-center items-center">
-            <Button onClick={() => login()}>Sign in with Google</Button>
+
+          <div className="flex justify-center">
+            <Button
+              onClick={() => login()}
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-lg shadow-md hover:shadow-lg transition"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <FcGoogle className="text-2xl" />
+                Sign in with Google
+              </div>
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

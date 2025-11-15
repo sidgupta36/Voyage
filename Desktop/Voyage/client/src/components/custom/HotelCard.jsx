@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
+
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -14,8 +15,8 @@ const HotelCard = ({ hotel }) => {
     try {
       const response = await axios.get(BASE_URL, {
         params: {
-          query: `${hotel?.hotel_name} nature buildings`,
-          per_page: 5
+            query: `${hotel?.hotel_name} hotel building`,
+            per_page: 5
         },
         headers: {
           Authorization: import.meta.env.VITE_PEXELS_API_KEY
@@ -25,8 +26,7 @@ const HotelCard = ({ hotel }) => {
       const images = response.data.photos.map((photo) => photo.src.medium);
       setPhotoUrl(images[1]);
     } catch (error) {
-      // console.error("Error fetching images from Pexels:", error);
-      toast.error(error.message || "Error fetching images from");
+      toast.error(error.message || "Failed to fetch hotel images");
     }
   };
 
@@ -35,25 +35,52 @@ const HotelCard = ({ hotel }) => {
   }, [hotel]);
 
   return (
-    <>
-      <Link
-        to={
-          "https://www.google.com/maps/search/?api=1&query=" +
-          hotel?.hotel_name +
-          "," +
-          hotel?.hotel_address
-        }
-        target="_blank"
+    <Link
+      to={
+        "https://www.google.com/maps/search/?api=1&query=" +
+        hotel?.hotel_name +
+        "," +
+        hotel?.hotel_address
+      }
+      target="_blank"
+    >
+      <div
+        className="
+          w-full rounded-3xl overflow-hidden 
+          backdrop-blur-xl bg-white/40 border border-white/20 
+          shadow-lg hover:shadow-xl transition-all cursor-pointer 
+          animate-fade-in
+        "
       >
-        <div className="hotel-card">
-          <img src={photoUrl} alt={`Loading...`} />
-          <div className="hotel-name">{hotel?.hotel_name}</div>
-          <div className="hotel-location">{hotel?.hotel_address}</div>
-          <div className="hotel-price">💰 {hotel?.price}</div>
-          <div className="hotel-stars">⭐ {hotel?.rating}</div>
+        {/* Hotel Image */}
+        <div className="w-full h-44 rounded-t-3xl overflow-hidden">
+          <img
+            src={photoUrl}
+            alt="Hotel"
+            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+          />
         </div>
-      </Link>
-    </>
+
+        {/* Card Content */}
+        <div className="p-5 space-y-2">
+          <div className="text-lg font-semibold text-gray-900 capitalize">
+            {hotel?.hotel_name}
+          </div>
+
+          <div className="text-gray-600 text-sm">
+            📍 {hotel?.hotel_address}
+          </div>
+
+          <div className="text-blue-600 font-semibold text-md">
+            💰 {hotel?.price}
+          </div>
+
+          <div className="text-yellow-500 font-medium">
+            ⭐ {hotel?.rating}
+          </div>
+        </div>
+      </div>
+    </Link>
   );
 };
 

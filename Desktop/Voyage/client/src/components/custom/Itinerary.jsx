@@ -2,6 +2,7 @@
 import { VisitWrapper } from "@/css-sheets/css-styles";
 import PlanCard from "./PlanCard";
 import { useEffect, useState } from "react";
+
 const Itinerary = ({ plan, day }) => {
   const [visitday, setVisitDay] = useState();
 
@@ -10,14 +11,41 @@ const Itinerary = ({ plan, day }) => {
   }, [day]);
 
   return (
-    <VisitWrapper>
+    <VisitWrapper
+      className="
+        w-full py-14 px-6 
+        bg-gradient-to-b from-blue-50 to-white 
+        animate-fade-in
+      "
+    >
+      {/* Day Title */}
+      <h2
+        className="
+          text-3xl md:text-4xl font-extrabold text-center mb-10 
+          text-gray-900
+        "
+      >
+        <span className="text-blue-600">Day</span> {visitday}
+      </h2>
 
-      <h2>{visitday}</h2>
-      <div className="visit-wrapper">
-        {plan?.plan &&
-          plan?.plan.map((place, index) => {
-            return <PlanCard place={place} plan={plan} key={index} />;
-          })}
+      {/* Itinerary Grid */}
+      <div
+        className="
+          grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 
+          px-4
+        "
+      >
+        {plan?.plan?.map((place, index) => (
+          <div
+            key={index}
+            className="
+              backdrop-blur-xl bg-white/40 border border-white/20
+              rounded-3xl shadow-lg hover:shadow-xl p-4 transition-all
+            "
+          >
+            <PlanCard place={place} plan={plan} />
+          </div>
+        ))}
       </div>
     </VisitWrapper>
   );

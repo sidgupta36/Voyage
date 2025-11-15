@@ -18,6 +18,12 @@ const Trip = () => {
   const dispatch = useDispatch();
   const trip = useSelector((state) => state.trip.trip);
 
+  // Fetch Trip Data
+  useEffect(() => {
+    dispatch(GetTripById(id));
+  }, [id]);
+
+  // Fetch Header Image
   useEffect(() => {
     Object.keys(trip).length > 0 && getPlacePhoto();
   }, [trip]);
@@ -28,54 +34,78 @@ const Trip = () => {
     try {
       const response = await axios.get(BASE_URL, {
         params: {
-          query: `${trip?.trip?.trip_details?.location} nature buildings`,
-          per_page: 5
+          query: `${trip?.trip?.trip_details?.location} nature travel landscape`,
+          per_page: 5,
         },
         headers: {
-          Authorization: import.meta.env.VITE_PEXELS_API_KEY
-        }
+          Authorization: import.meta.env.VITE_PEXELS_API_KEY,
+        },
       });
 
       const images = response.data.photos.map((photo) => photo.src.original);
       setHeadingImage(images[1]);
     } catch (error) {
-      // console.error("Error fetching images from Pexels:", error);
-      toast.error(error.message || "Error fetching images from");
+      toast.error(error.message || "Error fetching images");
     }
   };
 
-  useEffect(() => {
-    dispatch(GetTripById(id));
-  }, [id]);
-
   return (
-    <>
-      <TripWrapper>
-        {/* image section */}
-        <div className="image-section">
-          <img src={`${headingImage}`} alt="Loading..." />
+    <TripWrapper
+      className="
+        w-full min-h-screen 
+        bg-gradient-to-b from-blue-50 to-white
+        pb-20 animate-fade-in
+      "
+    >
+      {/* Header Image */}
+      <div className="w-full h-[50vh] overflow-hidden rounded-b-3xl shadow-xl relative">
+        <img
+          src={headingImage}
+          alt="location"
+          className="w-full h-full object-cover brightness-95"
+        />
+
+        {/* Overlay Title */}
+        <div
+          className="
+            absolute bottom-8 left-8 
+            backdrop-blur-xl bg-white/40 border border-white/20 
+            shadow-xl rounded-3xl 
+            px-8 py-4
+          "
+        >
+          <h1 className="text-4xl font-extrabold text-gray-900 capitalize">
+            {trip?.trip?.trip_details?.location}
+          </h1>
         </div>
+      </div>
 
-        {/* share section */}
-        <Share choice={trip && trip?.choice} />
+      {/* Share Section */}
+      <div className="mt-10 px-6">
+        <Share choice={trip && trip.choice} />
+      </div>
 
-        {/* Hotel-recomendation */}
-        <HotelRecommendations trip={trip && trip?.trip} />
+      {/* Hotel Section */}
+      <div className="mt-10 px-6">
+        <HotelRecommendations trip={trip && trip.trip} />
+      </div>
 
-        {/* Ininerary */}
-        <h1>Place to visit 🚀</h1>
+      {/* Itinerary Section */}
+      <div className="mt-16 px-6">
+        <h1 className="text-4xl font-extrabold text-gray-900 text-center mb-10">
+          <span className="text-blue-600">Places</span> to Visit 🚀
+        </h1>
+
         {Object.keys(trip).length > 0 &&
-          Object.keys(trip?.trip?.itinerary).map((day, index) => {
-            return (
-              <Itinerary
-                key={index}
-                day={day}
-                plan={trip?.trip?.itinerary[day]}
-              />
-            );
-          })}
-      </TripWrapper>
-    </>
+          Object.keys(trip?.trip?.itinerary).map((day, index) => (
+            <Itinerary
+              key={index}
+              day={day}
+              plan={trip?.trip?.itinerary[day]}
+            />
+          ))}
+      </div>
+    </TripWrapper>
   );
 };
 

@@ -5,34 +5,39 @@ import { useGoogleLogin } from "@react-oauth/google";
 const Auth = () => {
   const login = useGoogleLogin({
     onSuccess: (response) => console.log(response),
-    onError: (error) => console.log(error)
+    onError: (error) => console.log(error),
   });
 
   return (
-    <>
-      <div className="wrapper  w-screen h-[85vh] flex justify-center items-center  backdrop-blur-3xl">
-        <div className="h-max w-max rounded-3xl flex items-center justify-center z-20">
-          <div className="p-10 relative rounded-3xl shadow-2xl backdrop-blur-lg w-full flex flex-col items-center justify-center">
-            <div className="icon w-full flex justify-end mb-5"></div>
-            <div className="text-center h-auto w-auto mb-6 flex items-center justify-center flex-col">
-              <FcGoogle style={{ fontSize: "8vh" }} />
-              <h2 className="text-2xl font-bold mt-4 text-black">
-                Welcome back
-              </h2>
-              <p className="text-gray-400 text-sm">
-                Don’t have an account?{" "}
-                <a href="#" className="text-blue-500 hover:underline">
-                  Sign up.
-                </a>
-              </p>
-            </div>
-            <div className="">
-              <Button onClick={() => login()}>Sign in with Google</Button>
-            </div>
+    <section className="w-full min-h-[85vh] flex items-center justify-center bg-gradient-to-b from-blue-50 to-white px-4">
+      <div className="backdrop-blur-xl bg-white/40 border border-white/20 shadow-2xl rounded-3xl p-10 w-full max-w-md flex flex-col items-center animate-fade-in">
+        
+        {/* Icon */}
+        <FcGoogle className="text-6xl mb-4" />
+
+        {/* Heading */}
+        <h2 className="text-3xl font-extrabold text-gray-900">
+          Welcome Back
+        </h2>
+        <p className="text-gray-600 text-sm mt-2">
+          Don’t have an account?{" "}
+          <a href="#" className="text-blue-600 font-medium hover:underline">
+            Sign up
+          </a>
+        </p>
+
+        {/* Google Sign-in Button */}
+        <Button
+          onClick={() => login()}
+          className="mt-8 w-full py-5 text-lg font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all"
+        >
+          <div className="flex items-center justify-center gap-2">
+            <FcGoogle className="text-2xl" />
+            Sign in with Google
           </div>
-        </div>
+        </Button>
       </div>
-    </>
+    </section>
   );
 };
 

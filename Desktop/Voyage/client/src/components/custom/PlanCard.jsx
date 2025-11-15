@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
+
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { MdPlace } from "react-icons/md";
@@ -15,19 +16,18 @@ const PlanCard = ({ place, plan }) => {
     try {
       const response = await axios.get(BASE_URL, {
         params: {
-          query: `${place?.placeName} nature buildings`,
-          per_page: 5
+          query: `${place?.placeName} nature landmark`,
+          per_page: 5,
         },
         headers: {
-          Authorization: import.meta.env.VITE_PEXELS_API_KEY
-        }
+          Authorization: import.meta.env.VITE_PEXELS_API_KEY,
+        },
       });
 
-      const images = response.data.photos.map((photo) => photo.src.medium);
+      const images = response.data.photos.map((p) => p.src.medium);
       setPhotoUrl(images[1]);
     } catch (error) {
-      // console.error("Error fetching images from Pexels:", error);
-      toast.error(error.message || "Error fetching images from");
+      toast.error(error.message || "Failed to fetch images");
     }
   };
 
@@ -35,29 +35,51 @@ const PlanCard = ({ place, plan }) => {
     place && getPlacePhoto();
   }, [place]);
 
-
   return (
     <Link
-    className="w-[45%] h-[22vh] rounded-[10px]"
       to={"https://www.google.com/maps/search/?api=1&query=" + place?.placeName}
       target="_blank"
+      className="
+        block w-full
+        rounded-3xl overflow-hidden 
+        backdrop-blur-xl bg-white/40 border border-white/20
+        shadow-lg hover:shadow-xl 
+        hover:scale-[1.02] transition-all duration-300
+        animate-fade-in
+      "
     >
-      <div className="box">
-        <div className="left">
-          <img src={photoUrl} alt="place-image" />
+      {/* Image Section */}
+      <div className="w-full h-40 overflow-hidden rounded-t-3xl">
+        <img
+          src={photoUrl}
+          alt="place"
+          className="
+            w-full h-full object-cover 
+            hover:scale-105 
+            transition-transform duration-500
+          "
+        />
+      </div>
+
+      {/* Content */}
+      <div className="p-5 flex flex-col gap-2">
+
+        {/* Title */}
+        <div className="text-xl font-semibold text-gray-900 capitalize">
+          {place?.placeName}
         </div>
-        <div className="right">
-          <div className="r-top">
-            <span>{place?.placeName}</span>
-          </div>
-          <div className="r-middle">
-            <p>{place?.placeDetails}</p>
-          </div>
-          <div className="r-bottom text-red-400">
-            <span>{plan?.best_time_to_visit}</span>
-            <MdPlace style={{ fontSize: "20px", color: "orangered" }} />
-          </div>
+
+        {/* Details */}
+        <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
+          {place?.placeDetails}
+        </p>
+
+        {/* Best Time */}
+        <div className="flex justify-between items-center mt-2 text-blue-600 font-medium">
+          <span>{plan?.best_time_to_visit}</span>
+          <MdPlace className="text-xl text-red-500" />
         </div>
+
       </div>
     </Link>
   );
