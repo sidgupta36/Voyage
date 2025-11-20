@@ -86,7 +86,7 @@ function Header() {
       )}
 
       {/* Login Dialog */}
-      <Dialog open={openDialog}>
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogTitle />
         <DialogDescription />
 

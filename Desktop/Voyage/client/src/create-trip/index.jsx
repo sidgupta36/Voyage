@@ -1,13 +1,21 @@
 import { AIPrompt, budgetOptions, travelOptions } from "@/assets/assets";
 import { Input } from "@/components/ui/input";
 import { CreateTripWrapper } from "@/css-sheets/css-styles";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { toast } from "react-toastify";
 import { useGoogleLogin } from "@react-oauth/google";
 import { RxCross2 } from "react-icons/rx";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogPortal,
+  DialogOverlay,
+} from "@/components/ui/dialog";
+
 import { FcGoogle } from "react-icons/fc";
 import { TripCreateThunk } from "@/store/slices/TripSlice";
 import { UserRegister } from "@/store/slices/UserSlice";
@@ -20,13 +28,17 @@ function CreateTrip() {
   const [formData, setFormData] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const trip = useSelector((s) => s.trip.trip);
 
-  if (Object.keys(trip).length > 0) {
-    navigate(`/trip/${trip?._id}`);
-  }
+  // Redirect AFTER trip is created
+  useEffect(() => {
+    if (trip && Object.keys(trip).length > 0) {
+      navigate(`/trip/${trip?._id}`);
+    }
+  }, [trip]);
 
   const InputHandeler = (name, value) => {
     setFormData({
@@ -43,8 +55,13 @@ function CreateTrip() {
       return;
     }
 
-    if (!formData?.place || !formData?.people || !formData?.days || !formData?.budget) {
-      return toast.error("Please fill the details");
+    if (
+      !formData?.place ||
+      !formData?.people ||
+      !formData?.days ||
+      !formData?.budget
+    ) {
+      return toast.error("Please fill all details");
     }
 
     let aiPrompt = AIPrompt.replace("{location}", formData?.place?.label)
@@ -55,10 +72,10 @@ function CreateTrip() {
     try {
       setLoading(true);
       const ai_response = await AIchatSession.sendMessage(aiPrompt);
-      const trip = ai_response?.response?.text();
+      const tripResult = ai_response?.response?.text();
 
       const data = {
-        trip: JSON.parse(trip),
+        trip: JSON.parse(tripResult),
         email: user.email,
         userId: user.id,
         choice: { ...formData, place: formData.place.label },
@@ -72,14 +89,18 @@ function CreateTrip() {
     }
   };
 
+  // Google Login + then generate trip
   const login = useGoogleLogin({
     onSuccess: (response) => {
       dispatch(UserRegister(response)).then(() => {
         setOpenDialog(false);
-        GenerateTrip();
+
+        setTimeout(() => {
+          GenerateTrip();
+        }, 150);
       });
     },
-    onError: (error) => console.log(error),
+    onError: () => toast.error("Google login failed"),
   });
 
   return (
@@ -96,7 +117,7 @@ function CreateTrip() {
           Tell us your <span className="text-blue-600">travel preferences</span> 🚁
         </h1>
         <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
-          Provide a few quick details, and our AI travel planner will generate a personalized itinerary just for you.
+          Provide some quick details, and our AI planner will build the perfect itinerary.
         </p>
       </div>
 
@@ -128,14 +149,15 @@ function CreateTrip() {
             className="rounded-xl"
           />
           {(formData?.days <= 0 || formData?.days > 7) && (
-            <p className="text-red-600 mt-2 text-sm">We support trips from 1–7 days 🙃</p>
+            <p className="text-red-600 mt-2 text-sm">We support trips of 1–7 days 🙃</p>
           )}
         </div>
       </div>
 
-      {/* Budget */}
+      {/* Budget Section */}
       <div className="mb-12">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Choose Your Budget</h2>
+
         <div className="grid md:grid-cols-3 gap-6">
           {budgetOptions.map((budget) => (
             <div
@@ -156,9 +178,10 @@ function CreateTrip() {
         </div>
       </div>
 
-      {/* People */}
+      {/* Travel Type Section */}
       <div className="mb-12">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Who are you traveling with?</h2>
+
         <div className="grid md:grid-cols-3 gap-6">
           {travelOptions.map((travel) => (
             <div
@@ -193,44 +216,54 @@ function CreateTrip() {
         )}
       </div>
 
-      {/* Login Dialog */}
-      <Dialog open={openDialog}>
-        <DialogTitle />
-        <DialogDescription />
-        <DialogContent
-          className="
-            rounded-3xl shadow-2xl border border-white/20 
-            backdrop-blur-xl bg-white/50 p-10 w-full max-w-md
-          "
-        >
-          <button
-            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white shadow flex items-center justify-center hover:bg-gray-200 transition"
-            onClick={() => setOpenDialog(false)}
+      {/* LOGIN DIALOG — FULLY FIXED WITH PORTAL + OVERLAY */}
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogPortal>
+
+          {/* FIXED OVERLAY */}
+          <DialogOverlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
+
+          <DialogContent
+            className="
+              fixed z-50 top-1/2 left-1/2
+              -translate-x-1/2 -translate-y-1/2
+              rounded-3xl shadow-2xl border border-white/20 
+              backdrop-blur-xl bg-white/70 p-10 w-full max-w-md
+            "
           >
-            <RxCross2 className="text-gray-700" size={22} />
-          </button>
-
-          <div className="text-center mb-6">
-            <FcGoogle className="text-6xl mx-auto" />
-            <h2 className="text-3xl font-extrabold mt-4 text-gray-900">Welcome Back</h2>
-            <p className="text-gray-600 text-sm mt-1">
-              Don’t have an account?{" "}
-              <a href="#" className="text-blue-600 hover:underline">Sign up.</a>
-            </p>
-          </div>
-
-          <div className="flex justify-center">
-            <Button
-              onClick={() => login()}
-              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-lg shadow-md hover:shadow-lg transition"
+            <button
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white shadow flex items-center justify-center hover:bg-gray-200 transition"
+              onClick={() => setOpenDialog(false)}
             >
-              <div className="flex items-center justify-center gap-2">
-                <FcGoogle className="text-2xl" />
-                Sign in with Google
-              </div>
-            </Button>
-          </div>
-        </DialogContent>
+              <RxCross2 className="text-gray-700" size={22} />
+            </button>
+
+            <div className="text-center mb-6">
+              <FcGoogle className="text-6xl mx-auto" />
+              <h2 className="text-3xl font-extrabold mt-4 text-gray-900">
+                Welcome Back
+              </h2>
+              <p className="text-gray-600 text-sm mt-1">
+                Don’t have an account?{" "}
+                <a href="#" className="text-blue-600 hover:underline">
+                  Sign up.
+                </a>
+              </p>
+            </div>
+
+            <div className="flex justify-center">
+              <Button
+                onClick={() => login()}
+                className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-lg shadow-md hover:shadow-lg transition"
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <FcGoogle className="text-2xl" />
+                  Sign in with Google
+                </div>
+              </Button>
+            </div>
+          </DialogContent>
+        </DialogPortal>
       </Dialog>
     </CreateTripWrapper>
   );
