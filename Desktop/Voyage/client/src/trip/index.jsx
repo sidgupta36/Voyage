@@ -53,8 +53,8 @@ const Trip = () => {
     <TripWrapper
       className="
         w-full min-h-screen 
-        bg-gradient-to-b from-blue-50 to-white
-        pb-20 animate-fade-in
+        bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800
+        pb-20 animate-fade-in transition-colors duration-300
       "
     >
       {/* Header Image */}
@@ -69,12 +69,12 @@ const Trip = () => {
         <div
           className="
             absolute bottom-8 left-8 
-            backdrop-blur-xl bg-white/40 border border-white/20 
+            backdrop-blur-xl bg-white/40 dark:bg-gray-900/60 border border-white/20 dark:border-gray-700
             shadow-xl rounded-3xl 
             px-8 py-4
           "
         >
-          <h1 className="text-4xl font-extrabold text-gray-900 capitalize">
+          <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white capitalize">
             {trip?.trip?.trip_details?.location}
           </h1>
         </div>
@@ -92,7 +92,7 @@ const Trip = () => {
 
       {/* Itinerary Section */}
       <div className="mt-16 px-6">
-        <h1 className="text-4xl font-extrabold text-gray-900 text-center mb-10">
+        <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white text-center mb-10">
           <span className="text-blue-600">Places</span> to Visit 🚀
         </h1>
 

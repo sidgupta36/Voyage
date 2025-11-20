@@ -42,7 +42,7 @@ const PlanCard = ({ place, plan }) => {
       className="
         block w-full
         rounded-3xl overflow-hidden 
-        backdrop-blur-xl bg-white/40 border border-white/20
+        backdrop-blur-xl bg-white/40 dark:bg-gray-800/40 border border-white/20 dark:border-gray-700
         shadow-lg hover:shadow-xl 
         hover:scale-[1.02] transition-all duration-300
         animate-fade-in
@@ -65,12 +65,12 @@ const PlanCard = ({ place, plan }) => {
       <div className="p-5 flex flex-col gap-2">
 
         {/* Title */}
-        <div className="text-xl font-semibold text-gray-900 capitalize">
+        <div className="text-xl font-semibold text-gray-900 dark:text-white capitalize">
           {place?.placeName}
         </div>
 
         {/* Details */}
-        <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
+        <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed line-clamp-3">
           {place?.placeDetails}
         </p>
 

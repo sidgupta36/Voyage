@@ -1,14 +1,12 @@
 import {
   GoogleGenerativeAI,
-//   HarmCategory,
-//   HarmBlockThreshold,
 } from "@google/generative-ai";
 
 const apiKey = import.meta.env.VITE_GOOGLE_GEMINI_key;
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash-exp",
+  model: "gemini-2.0-flash",
   systemInstruction:
     "Generate Travel plan for Location: Las Vegas, for 3 days for Couple with a Cheap budget, Give me a Hotels options list with Hotel name, Hotel address, Price, Hotel image url, geo coordinates, rating, descriptions and suggest itinerary with placeName, Place Details, Place Image Url, Geo Coordinates, ticket Pricing, Time t travel each of the location for 3 days with each day plan with best time to visit in JSON format.\n"
 });

@@ -4,10 +4,10 @@ import HotelCard from "./HotelCard";
 
 const HotelRecommendations = ({ trip }) => {
   return (
-    <HotelWrapper className="w-full py-14 px-6 bg-gradient-to-b from-blue-50 to-white">
-      
+    <HotelWrapper className="w-full py-14 px-6 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+
       {/* Heading */}
-      <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 text-center mb-10">
+      <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white text-center mb-10">
         <span className="text-blue-600">Hotel</span> Recommendations
       </h1>
 
@@ -17,7 +17,7 @@ const HotelRecommendations = ({ trip }) => {
         {trip?.hotel_options?.map((hotel, index) => (
           <div
             key={index}
-            className="backdrop-blur-xl bg-white/40 border border-white/20 
+            className="backdrop-blur-xl bg-white/40 dark:bg-gray-800/40 border border-white/20 dark:border-gray-700
               rounded-3xl shadow-lg hover:shadow-xl transition-all p-4"
           >
             <HotelCard hotel={hotel} />

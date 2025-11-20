@@ -2,7 +2,7 @@ import { HeaderWrapper } from "@/css-sheets/css-styles";
 import { Button } from "../ui/button";
 
 import { RxCross2 } from "react-icons/rx";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogPortal, DialogOverlay } from "@/components/ui/dialog";
 import { FcGoogle } from "react-icons/fc";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { useSelector, useDispatch } from "react-redux";
@@ -13,6 +13,7 @@ import { setEmptyTrip } from "@/store/slices/TripSlice";
 import { useEffect, useState } from "react";
 import { setUser, UserRegister } from "@/store/slices/UserSlice";
 import { useGoogleLogin } from "@react-oauth/google";
+import { ThemeToggle } from "./ThemeToggle";
 
 function Header() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -38,19 +39,20 @@ function Header() {
     onError: () => toast.error("Login failed 🥺"),
   });
 
-  useEffect(() => {}, [user]);
+  useEffect(() => { }, [user]);
 
   return (
-    <header className="w-full bg-gradient-to-b from-blue-50 to-white shadow-sm border-b border-gray-200 py-3 px-6 flex items-center justify-between backdrop-blur-xl sticky top-0 z-50">
-      
+    <header className="w-full bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 py-3 px-6 flex items-center justify-between backdrop-blur-xl sticky top-0 z-50 transition-colors duration-300">
+
       {/* Logo */}
       <Link to={"/"} className="flex items-center">
-        <img src="/logo.svg" alt="logo" className="w-32 hover:opacity-90 transition" />
+        <img src="/logo.png" alt="logo" className="w-32 hover:opacity-90 transition" />
       </Link>
 
       {/* Right Side */}
       {user && Object.keys(user).length > 0 ? (
         <div className="flex items-center gap-4">
+          <ThemeToggle />
 
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-5 py-2 rounded-xl shadow-md transition-all"
@@ -60,7 +62,7 @@ function Header() {
           </Button>
 
           <Button
-            className="bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-xl transition-all"
+            className="bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-xl transition-all dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
             onClick={LogoutHandler}
           >
             Logout
@@ -77,56 +79,66 @@ function Header() {
           </div>
         </div>
       ) : (
-        <Button
-          className="bg-blue-600 text-white px-6 py-2 rounded-xl shadow-md hover:bg-blue-700 transition-all"
-          onClick={() => setOpenDialog(true)}
-        >
-          Login
-        </Button>
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
+          <Button
+            className="bg-blue-600 text-white px-6 py-2 rounded-xl shadow-md hover:bg-blue-700 transition-all"
+            onClick={() => setOpenDialog(true)}
+          >
+            Login
+          </Button>
+        </div>
       )}
 
       {/* Login Dialog */}
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogTitle />
-        <DialogDescription />
+        <DialogPortal>
+          <DialogOverlay className="fixed inset-0 bg-black/30 backdrop-blur-md z-40 animate-in fade-in duration-300" />
+          <DialogContent className="
+            fixed z-50 top-1/2 left-1/2
+            -translate-x-1/2 -translate-y-1/2
+            w-full max-w-md p-0 rounded-3xl
+            backdrop-blur-2xl bg-white/80 shadow-2xl border border-white/20
+            animate-in zoom-in-95 duration-300 overflow-hidden
+          ">
+            <DialogTitle className="sr-only">Login</DialogTitle>
+            <DialogDescription className="sr-only">Login with Google</DialogDescription>
 
-        <DialogContent className="w-full max-w-md py-10 px-8 rounded-3xl
-          backdrop-blur-xl bg-white/40 shadow-2xl border border-white/20
-          animate-fade-in relative">
+            <div className="relative p-10">
+              {/* Close Button */}
+              <button
+                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                onClick={() => setOpenDialog(false)}
+              >
+                <RxCross2 className="text-gray-500" size={18} />
+              </button>
 
-          {/* Close Button */}
-          <button
-            className="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-white/60 shadow hover:bg-white transition"
-            onClick={() => setOpenDialog(false)}
-          >
-            <RxCross2 size={20} />
-          </button>
-
-          {/* Google Icon & Title */}
-          <div className="flex flex-col items-center text-center mb-6">
-            <FcGoogle className="text-6xl mb-3" />
-            <h2 className="text-3xl font-extrabold text-gray-900">Welcome Back</h2>
-            <p className="text-gray-600 text-sm mt-1">
-              Don’t have an account?{" "}
-              <a href="#" className="text-blue-600 hover:underline font-medium">
-                Sign up
-              </a>
-            </p>
-          </div>
-
-          {/* Login Button */}
-          <div className="w-full flex justify-center">
-            <Button
-              onClick={() => login()}
-              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-lg shadow-md hover:shadow-lg transition-all"
-            >
-              <div className="flex items-center justify-center gap-2">
-                <FcGoogle className="text-2xl" />
-                Sign in with Google
+              {/* Google Icon & Title */}
+              <div className="text-center mb-8">
+                <div className="w-20 h-20 bg-white rounded-full shadow-lg mx-auto flex items-center justify-center mb-6">
+                  <FcGoogle className="text-5xl" />
+                </div>
+                <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Welcome Back</h2>
+                <p className="text-gray-500">
+                  Sign in to save your trips and access them anywhere.
+                </p>
               </div>
-            </Button>
-          </div>
-        </DialogContent>
+
+              {/* Login Button */}
+              <Button
+                onClick={() => login()}
+                className="w-full py-6 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-lg font-semibold shadow-lg hover:shadow-blue-500/30 transition-all flex items-center justify-center gap-3"
+              >
+                <FcGoogle className="text-2xl bg-white rounded-full p-0.5" />
+                Sign in with Google
+              </Button>
+
+              <p className="text-center text-gray-400 text-sm mt-6">
+                By signing in, you agree to our Terms & Privacy Policy.
+              </p>
+            </div>
+          </DialogContent>
+        </DialogPortal>
       </Dialog>
     </header>
   );

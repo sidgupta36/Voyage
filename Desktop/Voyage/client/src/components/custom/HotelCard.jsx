@@ -15,8 +15,8 @@ const HotelCard = ({ hotel }) => {
     try {
       const response = await axios.get(BASE_URL, {
         params: {
-            query: `${hotel?.hotel_name} hotel building`,
-            per_page: 5
+          query: `${hotel?.hotel_name} hotel building`,
+          per_page: 5
         },
         headers: {
           Authorization: import.meta.env.VITE_PEXELS_API_KEY
@@ -47,7 +47,7 @@ const HotelCard = ({ hotel }) => {
       <div
         className="
           w-full rounded-3xl overflow-hidden 
-          backdrop-blur-xl bg-white/40 border border-white/20 
+          backdrop-blur-xl bg-white/40 dark:bg-gray-800/40 border border-white/20 dark:border-gray-700
           shadow-lg hover:shadow-xl transition-all cursor-pointer 
           animate-fade-in
         "
@@ -63,11 +63,11 @@ const HotelCard = ({ hotel }) => {
 
         {/* Card Content */}
         <div className="p-5 space-y-2">
-          <div className="text-lg font-semibold text-gray-900 capitalize">
+          <div className="text-lg font-semibold text-gray-900 dark:text-white capitalize">
             {hotel?.hotel_name}
           </div>
 
-          <div className="text-gray-600 text-sm">
+          <div className="text-gray-600 dark:text-gray-400 text-sm">
             📍 {hotel?.hotel_address}
           </div>
 

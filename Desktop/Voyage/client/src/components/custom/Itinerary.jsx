@@ -14,15 +14,15 @@ const Itinerary = ({ plan, day }) => {
     <VisitWrapper
       className="
         w-full py-14 px-6 
-        bg-gradient-to-b from-blue-50 to-white 
-        animate-fade-in
+        bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800
+        animate-fade-in transition-colors duration-300
       "
     >
       {/* Day Title */}
       <h2
         className="
           text-3xl md:text-4xl font-extrabold text-center mb-10 
-          text-gray-900
+          text-gray-900 dark:text-white
         "
       >
         <span className="text-blue-600">Day</span> {visitday}
@@ -39,7 +39,7 @@ const Itinerary = ({ plan, day }) => {
           <div
             key={index}
             className="
-              backdrop-blur-xl bg-white/40 border border-white/20
+              backdrop-blur-xl bg-white/40 dark:bg-gray-800/40 border border-white/20 dark:border-gray-700
               rounded-3xl shadow-lg hover:shadow-xl p-4 transition-all
             "
           >
