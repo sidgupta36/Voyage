@@ -1,19 +1,23 @@
 import mongoose from "mongoose";
 
-
 const DataBase = async () => {
-    console.log(process.env.MONGO);
-
     try {
-        const mongoUri = process.env.MONGO.endsWith('/')
-            ? process.env.MONGO + 'tripinfo'
-            : process.env.MONGO + '/tripinfo';
-        const connection = await mongoose.connect(mongoUri)
-        console.log("Database connection successfull");
+        console.log("MongoDB URI from env:", process.env.MONGO);
+
+        if (!process.env.MONGO) {
+            console.error("❌ MONGO env variable is not set");
+            return;
+        }
+
+        await mongoose.connect(process.env.MONGO, {
+            // If you want a specific DB, uncomment next line:
+            // dbName: "tripinfo",
+        });
+
+        console.log("✅ Database connection successful");
     } catch (error) {
-        console.log("Data base failed to connect : ", error);
-
+        console.error("❌ Database failed to connect:\n", error);
     }
-}
+};
 
-export default DataBase
+export default DataBase;
