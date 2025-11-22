@@ -33,13 +33,37 @@ export const GetTripById = createAsyncThunk("fetch-single/trip", async (id) => {
     const response = await axios.get(
       `http://localhost:8000/trip/fetch-one-trip/${id}`
     );
-    // console.log("TRIP DATA", response.data);
 
     return response.data;
   } catch (error) {
-    // console.log("ERROR", error);
-
     toast.error(error.response.data.message || "error find 😶");
+    return null;
+  }
+});
+
+export const UpdateTripThunk = createAsyncThunk("update/trip", async ({ id, packageName, description }) => {
+  try {
+    const response = await axios.put(
+      `http://localhost:8000/trip/update/${id}`,
+      { packageName, description }
+    );
+    toast.success("Trip package updated successfully!");
+    return response.data;
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Failed to update trip");
+    return null;
+  }
+});
+
+export const DeleteTripThunk = createAsyncThunk("delete/trip", async (id) => {
+  try {
+    const response = await axios.delete(
+      `http://localhost:8000/trip/delete/${id}`
+    );
+    toast.success("Trip package deleted successfully!");
+    return { id, ...response.data };
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Failed to delete trip");
     return null;
   }
 });
@@ -57,12 +81,14 @@ const TripSlice = createSlice({
       state.trip = {};
       state.allTrip = {};
     },
+    resetCurrentTrip(state) {
+      state.trip = {};
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(TripCreateThunk.fulfilled, (state, action) => {
         if (action.payload) {
-          // console.log("Trip create details", action.payload.trip);
           state.trip = action.payload.trip;
         }
       })
@@ -73,13 +99,28 @@ const TripSlice = createSlice({
       })
       .addCase(GetTripById.fulfilled, (state, action) => {
         if (action.payload) {
-          // console.log("Single trip : ", action.payload);
           state.trip = action.payload.trip;
         }
-        // state.trip = action.payload.trip;
+      })
+      .addCase(UpdateTripThunk.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.trip = action.payload.trip;
+          // Update in allTrip array if exists
+          if (Array.isArray(state.allTrip)) {
+            const index = state.allTrip.findIndex(t => t._id === action.payload.trip._id);
+            if (index !== -1) {
+              state.allTrip[index] = action.payload.trip;
+            }
+          }
+        }
+      })
+      .addCase(DeleteTripThunk.fulfilled, (state, action) => {
+        if (action.payload && Array.isArray(state.allTrip)) {
+          state.allTrip = state.allTrip.filter(t => t._id !== action.payload.id);
+        }
       });
   }
 });
 
-export const { setEmptyTrip, goToTrip } = TripSlice.actions;
+export const { setEmptyTrip, goToTrip, resetCurrentTrip } = TripSlice.actions;
 export default TripSlice.reducer;

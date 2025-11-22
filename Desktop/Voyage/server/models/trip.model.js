@@ -2,17 +2,25 @@ import mongoose from "mongoose";
 
 const tripSchema = new mongoose.Schema(
   {
+    packageName: {
+      type: String,
+      required: true
+    },
+    description: {
+      type: String,
+      default: ""
+    },
     trip: {
       type: Object,
-      require: true
+      required: true
     },
     choice: {
       type: Object,
-      require: true
+      required: true
     },
     email: {
       type: String,
-      require: true
+      required: true
     }
   },
   {

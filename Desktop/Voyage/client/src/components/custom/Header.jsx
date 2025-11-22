@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
-import { setEmptyTrip } from "@/store/slices/TripSlice";
+import { setEmptyTrip, resetCurrentTrip } from "@/store/slices/TripSlice";
 import { useEffect, useState } from "react";
 import { setUser, UserRegister } from "@/store/slices/UserSlice";
 import { useGoogleLogin } from "@react-oauth/google";
@@ -22,7 +22,10 @@ function Header() {
   const navigate = useNavigate();
 
   const handelNavigate = () => navigate("/user");
-  const gotoCreateTrip = () => navigate("/create-trip");
+  const gotoCreateTrip = () => {
+    dispatch(resetCurrentTrip());
+    navigate("/create-trip");
+  };
 
   const LogoutHandler = () => {
     localStorage.clear();

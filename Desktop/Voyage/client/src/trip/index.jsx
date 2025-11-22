@@ -74,9 +74,12 @@ const Trip = () => {
             px-8 py-4
           "
         >
-          <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white capitalize">
-            {trip?.trip?.trip_details?.location}
+          <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-1">
+            {trip?.packageName}
           </h1>
+          <p className="text-lg text-gray-700 dark:text-gray-300 capitalize">
+            📍 {trip?.trip?.trip_details?.location}
+          </p>
         </div>
       </div>
 

@@ -57,9 +57,10 @@ function CreateTrip() {
       !formData?.place ||
       !formData?.people ||
       !formData?.days ||
-      !formData?.budget
+      !formData?.budget ||
+      !formData?.packageName
     ) {
-      return toast.error("Please fill all details");
+      return toast.error("Please fill all details including package name");
     }
 
     let aiPrompt = AIPrompt.replace("{location}", formData?.place?.label)
@@ -73,6 +74,8 @@ function CreateTrip() {
       const tripResult = ai_response?.response?.text();
 
       const data = {
+        packageName: formData.packageName,
+        description: formData.description || "",
         trip: JSON.parse(tripResult),
         email: user.email,
         userId: user.id,
@@ -147,6 +150,44 @@ function CreateTrip() {
             Provide some quick details, and our AI planner will build the perfect itinerary tailored just for you.
           </p>
         </motion.div>
+
+        {/* Package Name & Description */}
+        <div className="grid md:grid-cols-2 gap-8 mb-16">
+          {/* Package Name */}
+          <motion.div
+            variants={itemVariants}
+            className="backdrop-blur-xl bg-white/60 dark:bg-gray-800/60 border border-white/40 dark:border-gray-700 p-8 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300"
+          >
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Package Name</h2>
+            <Input
+              type="text"
+              placeholder="e.g., Summer Vacation 2025"
+              value={formData?.packageName || ""}
+              onChange={(e) => InputHandeler("packageName", e.target.value)}
+              className="rounded-xl border-gray-200 dark:border-gray-600 bg-white/50 dark:bg-gray-700/50 focus:bg-white dark:focus:bg-gray-700 focus:ring-2 focus:ring-purple-500 dark:text-white transition-all h-12 text-lg placeholder:text-gray-400"
+            />
+            {!formData?.packageName && (
+              <p className="text-red-500 mt-3 text-sm font-medium flex items-center gap-1">
+                <RxCross2 /> Please provide a package name
+              </p>
+            )}
+          </motion.div>
+
+          {/* Description (Optional) */}
+          <motion.div
+            variants={itemVariants}
+            className="backdrop-blur-xl bg-white/60 dark:bg-gray-800/60 border border-white/40 dark:border-gray-700 p-8 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300"
+          >
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Description (Optional)</h2>
+            <Input
+              type="text"
+              placeholder="Brief description of your trip"
+              value={formData?.description || ""}
+              onChange={(e) => InputHandeler("description", e.target.value)}
+              className="rounded-xl border-gray-200 dark:border-gray-600 bg-white/50 dark:bg-gray-700/50 focus:bg-white dark:focus:bg-gray-700 focus:ring-2 focus:ring-purple-500 dark:text-white transition-all h-12 text-lg placeholder:text-gray-400"
+            />
+          </motion.div>
+        </div>
 
         {/* Destination + Days */}
         <div className="grid md:grid-cols-2 gap-8 mb-16">
