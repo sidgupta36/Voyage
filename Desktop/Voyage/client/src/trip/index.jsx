@@ -89,12 +89,12 @@ const Trip = () => {
       </div>
 
       {/* Hotel Section */}
-      <div className="mt-10 px-6">
+      <div className="mt-10 px-6 max-w-7xl mx-auto">
         <HotelRecommendations trip={trip && trip.trip} />
       </div>
 
       {/* Itinerary Section */}
-      <div className="mt-16 px-6">
+      <div className="mt-16 px-6 max-w-7xl mx-auto">
         <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white text-center mb-10">
           <span className="text-blue-600">Places</span> to Visit 🚀
         </h1>

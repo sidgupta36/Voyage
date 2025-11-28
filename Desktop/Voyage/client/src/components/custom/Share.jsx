@@ -54,7 +54,26 @@ const Share = ({ choice }) => {
       </div>
 
       {/* RIGHT SHARE BUTTON SECTION */}
-      <div className="right">
+      <div className="right flex items-center gap-4">
+        {/* Visa Check Button */}
+        {choice?.place && !choice.place.includes("India") && (
+          <a
+            href="/visa-guide.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="
+              px-5 py-2 rounded-full
+              bg-gradient-to-r from-orange-500 to-red-600
+              text-white font-semibold text-sm
+              shadow-md hover:shadow-lg hover:scale-105
+              transition-all duration-300
+              flex items-center gap-2
+            "
+          >
+            <span className="text-lg">🛂</span> Visa Guide
+          </a>
+        )}
+
         <DropdownMenu>
           <DropdownMenuTrigger className="focus:outline-none">
             <FaRegShareFromSquare
@@ -62,7 +81,7 @@ const Share = ({ choice }) => {
                 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400
                 transition-colors cursor-pointer
               "
-              fontSize="38px"
+              fontSize="30px"
             />
           </DropdownMenuTrigger>
 

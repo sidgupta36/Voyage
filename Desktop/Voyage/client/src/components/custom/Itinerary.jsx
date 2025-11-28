@@ -31,14 +31,15 @@ const Itinerary = ({ plan, day }) => {
       {/* Itinerary Grid */}
       <div
         className="
-          grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 
-          px-4
+          flex gap-6 overflow-x-auto pb-8 px-4
+          scrollbar-hide snap-x snap-mandatory
         "
       >
         {plan?.plan?.map((place, index) => (
           <div
             key={index}
             className="
+              min-w-[300px] max-w-[300px] flex-shrink-0 snap-center
               backdrop-blur-xl bg-white/40 dark:bg-gray-800/40 border border-white/20 dark:border-gray-700
               rounded-3xl shadow-lg hover:shadow-xl p-4 transition-all
             "
