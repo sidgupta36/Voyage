@@ -9,6 +9,8 @@ import { useSelector } from "react-redux";
 import Error from "./error";
 import Footer from "./components/custom/Footer";
 
+import Chatbot from "./components/Chatbot";
+
 function App() {
   const user = useSelector((state) => state.user.user);
 
@@ -28,7 +30,8 @@ function App() {
 
         <Route path="*" element={<Error />} />
       </Routes>
-      <Footer/>
+      <Footer />
+      <Chatbot />
     </BrowserRouter>
   );
 }

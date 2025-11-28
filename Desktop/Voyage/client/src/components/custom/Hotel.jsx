@@ -5,11 +5,6 @@ import { Button } from "../ui/button";
 import { FaGoogle } from "react-icons/fa";
 
 const HotelRecommendations = ({ trip }) => {
-  const [visibleHotels, setVisibleHotels] = useState(6);
-
-  const handleSeeMore = () => {
-    setVisibleHotels((prev) => prev + 3);
-  };
 
   return (
     <HotelWrapper className="w-full py-14 px-6 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
@@ -18,32 +13,44 @@ const HotelRecommendations = ({ trip }) => {
         <span className="text-blue-600">Hotel</span> Recommendations
       </h1>
 
-      {/* Hotel Grid */}
-      <div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4 
-        animate-fade-in"
-      >
-        {trip?.hotel_options?.slice(0, visibleHotels).map((hotel, index) => (
-          <div
-            key={index}
-            className="backdrop-blur-xl bg-white/40 dark:bg-gray-800/40 border border-white/20 dark:border-gray-700
-              rounded-3xl shadow-lg hover:shadow-xl transition-all p-4"
-          >
-            <HotelCard hotel={hotel} />
-          </div>
-        ))}
+      {/* Hotel Slider */}
+      <div className="relative group">
+        <div
+          id="hotel-slider"
+          className="flex gap-6 overflow-x-auto pb-8 px-4 scrollbar-hide snap-x snap-mandatory scroll-smooth"
+        >
+          {trip?.hotel_options?.map((hotel, index) => (
+            <div
+              key={index}
+              className="min-w-full md:min-w-[calc(50%-12px)] lg:min-w-[calc(33.333%-16px)] flex-shrink-0 snap-center h-full"
+            >
+              <HotelCard hotel={hotel} />
+            </div>
+          ))}
+        </div>
+
+        {/* Navigation Buttons */}
+        <button
+          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white dark:bg-gray-800 p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-0 z-10"
+          onClick={() => document.getElementById('hotel-slider').scrollBy({ left: -300, behavior: 'smooth' })}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-gray-800 dark:text-white">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+        </button>
+        <button
+          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white dark:bg-gray-800 p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-0 z-10"
+          onClick={() => document.getElementById('hotel-slider').scrollBy({ left: 300, behavior: 'smooth' })}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-gray-800 dark:text-white">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
       </div>
 
       {/* Action Buttons */}
       <div className="flex flex-col items-center gap-4 mt-12">
-        {visibleHotels < trip?.hotel_options?.length && (
-          <Button
-            onClick={handleSeeMore}
-            className="px-8 py-6 text-lg rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-blue-500/30 transition-all"
-          >
-            See More Hotels
-          </Button>
-        )}
+        {/* See More button removed as all hotels are now scrollable */}
 
         <a
           href={`https://www.google.com/travel/hotels?q=hotels+in+${trip?.trip_details?.location}`}

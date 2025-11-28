@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const Share = ({ choice }) => {
+const Share = ({ choice, onDownload }) => {
   const shareUrl = window.location.href;
 
   return (
@@ -62,17 +62,44 @@ const Share = ({ choice }) => {
             target="_blank"
             rel="noopener noreferrer"
             className="
-              px-5 py-2 rounded-full
+              group relative px-6 py-3 rounded-xl
               bg-gradient-to-r from-orange-500 to-red-600
+              backdrop-blur-xl 
+              border border-white/20
               text-white font-semibold text-sm
-              shadow-md hover:shadow-lg hover:scale-105
-              transition-all duration-300
-              flex items-center gap-2
+              shadow-[0_8px_30px_rgb(249,115,22,0.3)]
+              hover:shadow-[0_8px_30px_rgb(249,115,22,0.5)]
+              hover:scale-105 hover:-translate-y-0.5
+              transition-all duration-300 ease-out
+              flex items-center gap-3 overflow-hidden
             "
           >
-            <span className="text-lg">🛂</span> Visa Guide
+            <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out" />
+            <span className="text-xl relative z-10">🛂</span>
+            <span className="relative z-10">Visa Guide</span>
           </a>
         )}
+
+        {/* Download PDF Button */}
+        <button
+          onClick={onDownload}
+          className="
+            group relative px-6 py-3 rounded-xl
+            bg-gradient-to-r from-blue-500 to-cyan-600
+            backdrop-blur-xl 
+            border border-white/20
+            text-white font-semibold text-sm
+            shadow-[0_8px_30px_rgb(59,130,246,0.3)]
+            hover:shadow-[0_8px_30px_rgb(59,130,246,0.5)]
+            hover:scale-105 hover:-translate-y-0.5
+            transition-all duration-300 ease-out
+            flex items-center gap-3 overflow-hidden
+          "
+        >
+          <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out" />
+          <span className="text-xl relative z-10">📥</span>
+          <span className="relative z-10">Download PDF</span>
+        </button>
 
         <DropdownMenu>
           <DropdownMenuTrigger className="focus:outline-none">

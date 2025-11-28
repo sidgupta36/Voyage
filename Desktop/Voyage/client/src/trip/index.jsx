@@ -11,6 +11,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
+import { toPng } from "html-to-image";
+import jsPDF from "jspdf";
+
 const Trip = () => {
   const { id } = useParams();
   const [headingImage, setHeadingImage] = useState("");
@@ -49,8 +52,51 @@ const Trip = () => {
     }
   };
 
+  const handleDownloadPDF = async () => {
+    const element = document.getElementById("trip-details-container");
+    if (!element) return;
+
+    try {
+      toast.info("Generating PDF... Please wait.");
+
+      // Use html-to-image which supports modern CSS (like oklch) better
+      const imgData = await toPng(element, {
+        cacheBust: true,
+        backgroundColor: "#ffffff",
+      });
+
+      const pdf = new jsPDF("p", "mm", "a4");
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+
+      // Calculate image height maintaining aspect ratio
+      const imgProps = pdf.getImageProperties(imgData);
+      const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`Trip-to-${trip?.trip?.trip_details?.location || "Destination"}.pdf`);
+      toast.success("PDF Downloaded successfully!");
+    } catch (error) {
+      console.error("PDF Generation Error:", error);
+      toast.error("Failed to generate PDF: " + (error.message || "Unknown error"));
+    }
+  };
+
   return (
     <TripWrapper
+      id="trip-details-container"
       className="
         w-full min-h-screen 
         bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800
@@ -85,7 +131,7 @@ const Trip = () => {
 
       {/* Share Section */}
       <div className="mt-10 px-6">
-        <Share choice={trip && trip.choice} />
+        <Share choice={trip && trip.choice} onDownload={handleDownloadPDF} />
       </div>
 
       {/* Hotel Section */}
